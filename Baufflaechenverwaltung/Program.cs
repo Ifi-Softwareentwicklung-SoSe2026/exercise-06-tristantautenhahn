@@ -34,6 +34,7 @@ namespace Baufflaechenverwaltung
             if(bauflaeche.Bebaubarkeit = 'Ja' || )
         }
         #FIXME 
+        // funktion muss warscheinlich nach main verschoben werden 
     }
 
     public class Grundstueck
