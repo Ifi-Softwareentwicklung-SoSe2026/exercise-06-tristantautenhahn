@@ -27,6 +27,13 @@ namespace Baufflaechenverwaltung
         public FlaechenStatus Status { get; set; } = FlaechenStatus.Frei;
 
         public void FlaecheReservieren() => Status = FlaechenStatus.Reserviert;
+
+        // Prüfen ob die Fläche Bebaubar ist
+        public string BaubarkeitPrüfen(Bauflaeche bauflaeche)
+        {
+            if(bauflaeche.Bebaubarkeit = 'Ja' || )
+        }
+        #FIXME 
     }
 
     public class Grundstueck
@@ -46,12 +53,14 @@ namespace Baufflaechenverwaltung
         public List<Bauflaeche> ZugeordneteFlaechen { get; set; } = new List<Bauflaeche>();
 
         public void StatusAktualisieren(BauvorhabenStatus neuerStatus) => Status = neuerStatus;
+    
     }
 
     class Program
     {
         static void Main(string[] args)
         {
+            
             // Demonstration der Funktionalität
             var grundstueck = new Grundstueck { FlurstueckNummer = "0015 00012 001/002" };
             var flaeche = new Bauflaeche 
