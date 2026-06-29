@@ -188,6 +188,66 @@ Falls im Verlauf der Jürgen-Issues ein UML-Klassendiagramm gefordert wird, erg�
 
 ```text @plantUML
 @startuml
+skinparam classAttributeIconSize 0
+
+class Grundstueck {
+    + String flurstueckNummer
+}
+
+class Bauflaeche {
+    + String id
+    + double groesse
+    + String lage
+    + Nutzung aktuelleNutzung
+    + String bebaubarkeit
+    + String bPlanNummer
+    + decimal bodenrichtwert
+    + String eigentuemer
+    + FlaechenStatus status
+    + void FlaecheReservieren()
+    + String BaubarkeitPruefen()
+}
+
+class Bauvorhaben {
+    + String titel
+    + String geplanteNutzung
+    + DateTime beginn
+    + DateTime fertigstellung
+    + BauvorhabenStatus status
+    + void StatusAktualisieren(BauvorhabenStatus neuerStatus)
+}
+
+class Antragsteller {
+    + String name
+    + String kontaktdaten
+    + String firma
+}
+
+enum Nutzung {
+    Gewerbe
+    Landwirtschaft
+    Forst
+    Wohnnutzung
+    Brachfläche
+}
+
+enum FlaechenStatus {
+    Frei
+    Reserviert
+    Bebaut
+}
+
+enum BauvorhabenStatus {
+    AntragEingereicht
+    Genehmigt
+    Abgelehnt
+    InBearbeitung
+    Abgeschlossen
+}
+
+Grundstueck "1" *-- "0..*" Bauflaeche : enthält
+Bauvorhaben "0..*" o-- "1..*" Bauflaeche : nutzt
+Bauvorhaben "0..*" --> "1" Antragsteller : wird beantragt von
 
 @enduml
 ```
