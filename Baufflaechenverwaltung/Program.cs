@@ -26,7 +26,30 @@ namespace Baufflaechenverwaltung
         public string Eigentuemer { get; set; } = string.Empty;
         public FlaechenStatus Status { get; set; } = FlaechenStatus.Frei;
 
-        public void FlaecheReservieren() => Status = FlaechenStatus.Reserviert;
+        public void FlaecheReservieren(Bauflaeche bauflaeche)
+        {
+            if(BaubarkeitPrüfen(bauflaeche) == "Die Fläche kann noch bebaut werden."){
+            Status = FlaechenStatus.Reserviert;
+            }
+            else
+            {
+                Console.WriteLine("Die Fläche ist schon Bebaut und damit nicht mehr reservierbar!"); 
+            }
+        } 
+
+        // Prüfen ob die Fläche Bebaubar ist
+        public string BaubarkeitPrüfen(Bauflaeche bauflaeche)
+        {
+            if(bauflaeche.Bebaubarkeit == "Ja" || bauflaeche.Bebaubarkeit == "ja")
+            {
+                return "Die Fläche kann noch bebaut werden.";
+            }
+            else
+            {
+                return "Die Fläche kann nicht bebaut werden."; 
+            }
+        }
+
     }
 
     public class Grundstueck
@@ -46,12 +69,14 @@ namespace Baufflaechenverwaltung
         public List<Bauflaeche> ZugeordneteFlaechen { get; set; } = new List<Bauflaeche>();
 
         public void StatusAktualisieren(BauvorhabenStatus neuerStatus) => Status = neuerStatus;
+    
     }
 
     class Program
     {
         static void Main(string[] args)
         {
+            
             // Demonstration der Funktionalität
             var grundstueck = new Grundstueck { FlurstueckNummer = "0015 00012 001/002" };
             var flaeche = new Bauflaeche 
@@ -76,7 +101,8 @@ namespace Baufflaechenverwaltung
                 Fertigstellung = DateTime.Now.AddYears(1)
             };
 
-            flaeche.FlaecheReservieren();
+            flaeche.FlaecheReservieren(flaeche);
+            Console.WriteLine(flaeche.BaubarkeitPrüfen(flaeche));  
             vorhaben.ZugeordneteFlaechen.Add(flaeche);
             vorhaben.StatusAktualisieren(BauvorhabenStatus.Genehmigt);
 
