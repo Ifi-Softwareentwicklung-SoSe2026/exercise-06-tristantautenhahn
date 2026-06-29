@@ -102,7 +102,7 @@ namespace Baufflaechenverwaltung
             };
 
             flaeche.FlaecheReservieren(flaeche);
-            flaeche.BaubarkeitPrüfen(flaeche); 
+            Console.WriteLine(flaeche.BaubarkeitPrüfen(flaeche));  
             vorhaben.ZugeordneteFlaechen.Add(flaeche);
             vorhaben.StatusAktualisieren(BauvorhabenStatus.Genehmigt);
 
