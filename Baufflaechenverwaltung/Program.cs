@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Bauverwaltung; 
+
 
 namespace Baufflaechenverwaltung
 {
@@ -7,13 +9,23 @@ namespace Baufflaechenverwaltung
     public enum BauvorhabenStatus { AntragEingereicht, Genehmigt, Abgelehnt, InBearbeitung, Abgeschlossen }
     public enum Nutzung { Gewerbe, Landwirtschaft, Forst, Wohnnutzung, Brachflaeche }
 
-    public class Antragsteller
-    {
+public class Person{
         public string Name { get; set; } = string.Empty;
         public string Kontaktdaten { get; set; } = string.Empty;
         public string Firma { get; set; } = string.Empty;
-    }
 
+    }
+    public class Antragsteller : Person , IErstellen, IHochladen, IBearbeiten, IStatusEinsehen; 
+    public class Bauamtsmittarbeiter : Person , IBearbeiten, IReservieren, IEntscheiden;
+    public class Gutachter : Person , IStatusEinsehen;
+
+    public static class RollenPrüfer
+    {
+        public static bool HatRolle<T>(Person person)
+        {
+            return person is T;
+        }
+    }
     public class Bauflaeche
     {
         public string Id { get; set; } = string.Empty;
@@ -26,14 +38,15 @@ namespace Baufflaechenverwaltung
         public string Eigentuemer { get; set; } = string.Empty;
         public FlaechenStatus Status { get; set; } = FlaechenStatus.Frei;
 
-        public void FlaecheReservieren(Bauflaeche bauflaeche)
+        public void FlaecheReservieren(Bauflaeche bauflaeche, Person person)
         {
-            if(BaubarkeitPrüfen(bauflaeche) == "Die Fläche kann noch bebaut werden."){
+            if(BaubarkeitPrüfen(bauflaeche) == "Die Fläche kann noch bebaut werden." && RollenPrüfer.HatRolle<IBearbeiten>(person))
+            {
             Status = FlaechenStatus.Reserviert;
             }
             else
             {
-                Console.WriteLine("Die Fläche ist schon Bebaut und damit nicht mehr reservierbar!"); 
+                Console.WriteLine("Die Fläche ist schon Bebaut und damit nicht mehr reservierbar oder die Person hat nicht die nötigen Berechtigungen!"); 
             }
         } 
 
@@ -61,7 +74,7 @@ namespace Baufflaechenverwaltung
     public class Bauvorhaben
     {
         public string Titel { get; set; } = string.Empty;
-        public Antragsteller Antragsteller { get; set; } = new Antragsteller();
+        public Person person { get; set; } = new Person();
         public string GeplanteNutzung { get; set; } = string.Empty;
         public DateTime Beginn { get; set; }
         public DateTime Fertigstellung { get; set; }
@@ -95,13 +108,13 @@ namespace Baufflaechenverwaltung
             var vorhaben = new Bauvorhaben
             {
                 Titel = "Neubau Wohnhaus",
-                Antragsteller = new Antragsteller { Name = "Erika Musterfrau", Firma = "Bau GmbH" },
+                person = new Person { Name = "Erika Musterfrau", Firma = "Bau GmbH" },
                 GeplanteNutzung = "Wohngebäude",
                 Beginn = DateTime.Now.AddMonths(1),
                 Fertigstellung = DateTime.Now.AddYears(1)
-            };
-
-            flaeche.FlaecheReservieren(flaeche);
+            }; 
+            Person person = new Bauamtsmittarbeiter { Name = "Hans Bauleiter", Firma = "Bauamt Stadt XY" };
+            flaeche.FlaecheReservieren(flaeche, person);
             Console.WriteLine(flaeche.BaubarkeitPrüfen(flaeche));  
             vorhaben.ZugeordneteFlaechen.Add(flaeche);
             vorhaben.StatusAktualisieren(BauvorhabenStatus.Genehmigt);
