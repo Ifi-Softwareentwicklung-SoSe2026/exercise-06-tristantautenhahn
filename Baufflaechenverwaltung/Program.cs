@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Bauverwaltung; 
+
 
 namespace Baufflaechenverwaltung
 {
@@ -7,11 +9,27 @@ namespace Baufflaechenverwaltung
     public enum BauvorhabenStatus { AntragEingereicht, Genehmigt, Abgelehnt, InBearbeitung, Abgeschlossen }
     public enum Nutzung { Gewerbe, Landwirtschaft, Forst, Wohnnutzung, Brachflaeche }
 
-    public class Antragsteller
+public class Person{
+    public class Antragsteller : IErstellen, IHochladen, IBearbeiten, IStatusEinsehen
     {
         public string Name { get; set; } = string.Empty;
         public string Kontaktdaten { get; set; } = string.Empty;
         public string Firma { get; set; } = string.Empty;
+    }
+    public class Bauamtsmittarbeiter : IBearbeiten, IReservieren, IEntscheiden
+    {
+        public string Name{get; set;} = string.Empty;
+        public string Kontakdaten{get; set;} = string.Empty;
+        public string Firma = "Bauamt"; 
+    }
+
+    public class Gutachter : IStatusEinsehen
+    {
+        public string Name{get; set;} = string.Empty;
+        public string Kontakdaten{get; set;} = string.Empty;
+        public string Firma{get; set;}= string.Empty; 
+    }
+
     }
 
     public class Bauflaeche
