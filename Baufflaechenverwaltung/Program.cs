@@ -10,28 +10,22 @@ namespace Baufflaechenverwaltung
     public enum Nutzung { Gewerbe, Landwirtschaft, Forst, Wohnnutzung, Brachflaeche }
 
 public class Person{
-    public class Antragsteller : IErstellen, IHochladen, IBearbeiten, IStatusEinsehen
-    {
         public string Name { get; set; } = string.Empty;
         public string Kontaktdaten { get; set; } = string.Empty;
         public string Firma { get; set; } = string.Empty;
+
     }
-    public class Bauamtsmittarbeiter : IBearbeiten, IReservieren, IEntscheiden
+    public class Antragsteller : Person , IErstellen, IHochladen, IBearbeiten, IStatusEinsehen; 
+    public class Bauamtsmittarbeiter : Person , IBearbeiten, IReservieren, IEntscheiden;
+    public class Gutachter : Person , IStatusEinsehen;
+
+    public static class RollenPrüfer
     {
-        public string Name{get; set;} = string.Empty;
-        public string Kontakdaten{get; set;} = string.Empty;
-        public string Firma = "Bauamt"; 
+        public static bool HatRolle<T>(Person person)
+        {
+            return person is T;
+        }
     }
-
-    public class Gutachter : IStatusEinsehen
-    {
-        public string Name{get; set;} = string.Empty;
-        public string Kontakdaten{get; set;} = string.Empty;
-        public string Firma{get; set;}= string.Empty; 
-    }
-
-    }
-
     public class Bauflaeche
     {
         public string Id { get; set; } = string.Empty;
@@ -44,14 +38,15 @@ public class Person{
         public string Eigentuemer { get; set; } = string.Empty;
         public FlaechenStatus Status { get; set; } = FlaechenStatus.Frei;
 
-        public void FlaecheReservieren(Bauflaeche bauflaeche)
+        public void FlaecheReservieren(Bauflaeche bauflaeche, Person person)
         {
-            if(BaubarkeitPrüfen(bauflaeche) == "Die Fläche kann noch bebaut werden."){
+            if(BaubarkeitPrüfen(bauflaeche) == "Die Fläche kann noch bebaut werden." && RollenPrüfer.HatRolle<IBearbeiten>(person))
+            {
             Status = FlaechenStatus.Reserviert;
             }
             else
             {
-                Console.WriteLine("Die Fläche ist schon Bebaut und damit nicht mehr reservierbar!"); 
+                Console.WriteLine("Die Fläche ist schon Bebaut und damit nicht mehr reservierbar oder die Person hat nicht die nötigen Berechtigungen!"); 
             }
         } 
 
@@ -79,7 +74,7 @@ public class Person{
     public class Bauvorhaben
     {
         public string Titel { get; set; } = string.Empty;
-        public Antragsteller Antragsteller { get; set; } = new Antragsteller();
+        public Person person { get; set; } = new Person();
         public string GeplanteNutzung { get; set; } = string.Empty;
         public DateTime Beginn { get; set; }
         public DateTime Fertigstellung { get; set; }
@@ -113,13 +108,13 @@ public class Person{
             var vorhaben = new Bauvorhaben
             {
                 Titel = "Neubau Wohnhaus",
-                Antragsteller = new Antragsteller { Name = "Erika Musterfrau", Firma = "Bau GmbH" },
+                person = new Person { Name = "Erika Musterfrau", Firma = "Bau GmbH" },
                 GeplanteNutzung = "Wohngebäude",
                 Beginn = DateTime.Now.AddMonths(1),
                 Fertigstellung = DateTime.Now.AddYears(1)
             };
-
-            flaeche.FlaecheReservieren(flaeche);
+            Person person = new Bauamtsmittarbeiter { Name = "Hans Bauleiter", Firma = "Bauamt Stadt XY" };
+            flaeche.FlaecheReservieren(flaeche, person);
             Console.WriteLine(flaeche.BaubarkeitPrüfen(flaeche));  
             vorhaben.ZugeordneteFlaechen.Add(flaeche);
             vorhaben.StatusAktualisieren(BauvorhabenStatus.Genehmigt);
