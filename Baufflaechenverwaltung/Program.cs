@@ -85,11 +85,25 @@ public class Person{
     
     }
 
+    public static class JsonPersistence
+    {
+        public static void SaveToFile<T>(T data, string filePath)
+        {
+            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filePath, json);
+        }
+
+        public static T LoadFromFile<T>(string filePath)
+        {
+            string json = File.ReadAllText(filePath);
+            return JsonSerializer.Deserialize<T>(json) ?? default!;
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            
             // Demonstration der Funktionalität
             var grundstueck = new Grundstueck { FlurstueckNummer = "0015 00012 001/002" };
             var flaeche = new Bauflaeche 
@@ -112,7 +126,7 @@ public class Person{
                 GeplanteNutzung = "Wohngebäude",
                 Beginn = DateTime.Now.AddMonths(1),
                 Fertigstellung = DateTime.Now.AddYears(1)
-            }; 
+            };
             Person person = new Bauamtsmittarbeiter { Name = "Hans Bauleiter", Firma = "Bauamt Stadt XY" };
             flaeche.FlaecheReservieren(flaeche, person);
             Console.WriteLine(flaeche.BaubarkeitPrüfen(flaeche));  
@@ -121,6 +135,14 @@ public class Person{
 
             Console.WriteLine($"Bauvorhaben '{vorhaben.Titel}' für Fläche {flaeche.Id} ist nun {vorhaben.Status}.");
             Console.WriteLine($"Flächenstatus: {flaeche.Status}");
+
+            // JSON Speicherung Demonstration
+            string filePath = "flaechen.json";
+            JsonPersistence.SaveToFile(grundstueck, filePath);
+            Console.WriteLine($"Daten wurden in {filePath} gespeichert.");
+
+            var loadedGrundstueck = JsonPersistence.LoadFromFile<Grundstueck>(filePath);
+            Console.WriteLine($"Geladenes Grundstück: {loadedGrundstueck.FlurstueckNummer} mit {loadedGrundstueck.Bauflaechen.Count} Fläche(n).");
         }
     }
 }
