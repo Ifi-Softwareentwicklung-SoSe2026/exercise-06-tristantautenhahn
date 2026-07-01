@@ -112,7 +112,7 @@ public class Person{
                 GeplanteNutzung = "Wohngebäude",
                 Beginn = DateTime.Now.AddMonths(1),
                 Fertigstellung = DateTime.Now.AddYears(1)
-            };
+            }; 
             Person person = new Bauamtsmittarbeiter { Name = "Hans Bauleiter", Firma = "Bauamt Stadt XY" };
             flaeche.FlaecheReservieren(flaeche, person);
             Console.WriteLine(flaeche.BaubarkeitPrüfen(flaeche));  
